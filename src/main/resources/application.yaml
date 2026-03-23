@@ -3,15 +3,15 @@ ktor:
     modules:
       - org.delcom.ApplicationKt.module
   deployment:
-    port: 8081
-    host: 0.0.0.0
+    port: ${APP_PORT}
+    host: ${APP_HOST}
 
   database:
-    host: ${DB_HOST:localhost}
-    port: ${DB_PORT:5432}
-    name: ${DB_NAME:proyek1_library}
-    user: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    host: ${DB_HOST}
+    port: ${DB_PORT}
+    name: ${DB_NAME}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
 
   jwt:
-    secret: ${JWT_SECRET:rahasia123}
+    secret: "${JWT_SECRET}"

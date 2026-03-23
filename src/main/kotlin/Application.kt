@@ -2,6 +2,7 @@ package org.delcom
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import io.github.cdimascio.dotenv.dotenv
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -18,6 +19,13 @@ import org.delcom.module.appModule
 import org.koin.ktor.plugin.Koin
 
 fun main(args: Array<String>) {
+    val dotenv = dotenv {
+        directory = "."
+        ignoreIfMissing = false
+    }
+    dotenv.entries().forEach {
+        System.setProperty(it.key, it.value)
+    }
     EngineMain.main(args)
 }
 
