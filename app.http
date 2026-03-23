@@ -1,0 +1,292 @@
+### ============================================================
+### API Manajemen Perpustakaan - pam-2026-ifs23015-proyek1-be
+### Base URL: http://localhost:8081
+### ============================================================
+
+@baseUrl = http://localhost:8081
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZWxjb20tdXNlciIsImlzcyI6ImRlbGNvbS1hcHAiLCJ1c2VySWQiOiJjNTg4ZWM3Ni1mZDdkLTQ1NTUtOTljYi1mOTM5Mjg4MDgxZTciLCJleHAiOjE3NzQwMDA5ODF9.1wGfLt7rZLTdndy7ov6ANPpdWE6nqYh_XUs40z_qyGM
+@refreshToken = 6719133a-8ab7-4e49-8159-958f216ef751
+@bookId = 5ffa3cc0-ac11-458c-b813-19bb21223f4f
+@userId = c588ec76-fd7d-4555-99cb-f93928808le7
+@borrowingId = 4baf588d-e1dc-4f55-a44e-814a9a7404e8
+
+
+### ============================================================
+### 1. ROOT
+### ============================================================
+
+### Cek server berjalan
+GET {{baseUrl}}/
+
+
+### ============================================================
+### 2. AUTH
+### ============================================================
+
+### [AUTH] Register - Daftar akun baru
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Budi Santoso",
+  "username": "budi123",
+  "password": "password123"
+}
+
+###
+
+### [AUTH] Login - Masuk dan dapatkan token
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "budi_updated",
+  "password": "passwordBaru789"
+}
+
+###
+
+### [AUTH] Refresh Token - Perbarui auth token
+POST {{baseUrl}}/auth/refresh-token
+Content-Type: application/json
+
+{
+  "authToken": "{{authToken}}",
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+### [AUTH] Logout - Keluar dan hapus token
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{
+  "authToken": "{{authToken}}"
+}
+
+###
+
+
+### ============================================================
+### 3. USERS (Profil) - Memerlukan Bearer Token
+### ============================================================
+
+### [USER] Get Me - Ambil data profil saya
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+
+###
+
+### [USER] Put Me - Ubah nama dan username
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Budi Santoso Updated",
+  "username": "budi_updated"
+}
+
+###
+
+### [USER] Put My Password - Ubah kata sandi
+PUT {{baseUrl}}/users/me/password
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "password": "passwordBaru789",
+  "newPassword": "passwordBaru999"
+}
+
+###
+
+### [USER] Put My About - Ubah deskripsi/tentang saya
+PUT {{baseUrl}}/users/me/about
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "about": "Saya adalah pustakawan di perpustakaan kota."
+}
+
+###
+
+### [USER] Put My Photo - Upload foto profil
+PUT {{baseUrl}}/users/me/photo
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="photo"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\hp\Documents\Semester 6\PAM\Praktikum\uts-proyek\pam-2026-ifs23015-proyek1-be\foto.jpg
+--boundary--
+
+###
+
+
+### ============================================================
+### 4. IMAGES (Public - Tanpa Token)
+### ============================================================
+
+### [IMAGE] Ambil foto profil user berdasarkan ID
+GET {{baseUrl}}/images/users/{{userId}}
+
+###
+
+### [IMAGE] Ambil cover buku berdasarkan ID
+GET {{baseUrl}}/images/books/{{bookId}}
+
+###
+
+
+### ============================================================
+### 5. BOOKS - Memerlukan Bearer Token
+### ============================================================
+
+### [BOOK] Get All Books - Ambil semua buku
+GET {{baseUrl}}/books
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BOOK] Get All Books - Dengan filter pencarian
+GET {{baseUrl}}/books?search=Harry Potter&page=1&perPage=10
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BOOK] Get All Books - Dengan filter genre
+GET {{baseUrl}}/books?genre=Fantasi&page=1&perPage=5
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BOOK] Get Book by ID - Ambil detail buku
+GET {{baseUrl}}/books/{{bookId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BOOK] Post Book - Tambah buku baru
+POST {{baseUrl}}/books
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Harry Potter dan Batu Bertuah",
+  "author": "J.K. Rowling",
+  "genre": "Fantasi",
+  "stock": 5
+}
+
+###
+
+### [BOOK] Put Book - Update data buku
+PUT {{baseUrl}}/books/{{bookId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Harry Potter dan Batu Bertuah (Edisi Revisi)",
+  "author": "J.K. Rowling",
+  "genre": "Fantasi",
+  "stock": 10
+}
+
+###
+
+### [BOOK] Put Cover Book - Upload cover buku
+PUT {{baseUrl}}/books/{{bookId}}/cover
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="cover"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\hp\Documents\Semester 6\PAM\Praktikum\uts-proyek\pam-2026-ifs23015-proyek1-be\foto.jpg
+--boundary--
+
+###
+
+### [BOOK] Delete Book - Hapus buku
+### Catatan: buku tidak bisa dihapus jika masih ada peminjaman aktif
+DELETE {{baseUrl}}/books/{{bookId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+
+### ============================================================
+### 6. BORROWINGS (Peminjaman) - Memerlukan Bearer Token
+### ============================================================
+
+### [BORROWING] Get All Borrowings - Ambil semua peminjaman
+GET {{baseUrl}}/borrowings
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BORROWING] Get All Borrowings - Filter status "borrowed"
+GET {{baseUrl}}/borrowings?status=borrowed&page=1&perPage=10
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BORROWING] Get All Borrowings - Filter status "returned"
+GET {{baseUrl}}/borrowings?status=returned&page=1&perPage=10
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BORROWING] Get All Borrowings - Dengan pencarian nama peminjam
+GET {{baseUrl}}/borrowings?search=Andi&page=1&perPage=10
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BORROWING] Get Borrowing Summary - Ringkasan data peminjaman
+GET {{baseUrl}}/borrowings/summary
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BORROWING] Get Borrowing by ID - Ambil detail peminjaman
+GET {{baseUrl}}/borrowings/{{borrowingId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### [BORROWING] Post Borrowing - Catat peminjaman baru
+POST {{baseUrl}}/borrowings
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "bookId": "{{bookId}}",
+  "borrowerName": "Andi Prasetyo"
+}
+
+###
+
+### [BORROWING] Put Borrowing - Update status peminjaman
+PUT {{baseUrl}}/borrowings/{{borrowingId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "borrowerName": "Andi Prasetyo",
+  "status": "returned"
+}
+
+###
+
+### [BORROWING] Delete Borrowing - Hapus data peminjaman
+DELETE {{baseUrl}}/borrowings/{{borrowingId}}
+Authorization: Bearer {{authToken}}
+
+###
